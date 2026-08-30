@@ -87,49 +87,28 @@
 
 
 
-// AGGRESSIVE: Keep license page visible
+
+
+// Show splash/login page on load
 (function() {
-  function forceShowLicense() {
-    // Hide all pages with CSS
+  function showSplash() {
     document.querySelectorAll('[id^="page-"]').forEach(p => {
       p.classList.remove('active');
-      p.style.position = 'absolute';
-      p.style.visibility = 'hidden';
-      p.style.pointerEvents = 'none';
-      p.style.zIndex = '-1';
     });
     
-    // Show ONLY license page
-    const lic = document.getElementById('page-licence');
-    if (lic) {
-      lic.classList.add('active');
-      lic.style.visibility = 'visible';
-      lic.style.pointerEvents = 'auto';
-      lic.style.zIndex = '100';
-      lic.style.position = 'absolute';
-      lic.style.transform = 'translateX(0)';
+    // Try splash first, then login
+    const splash = document.getElementById('page-splash') || document.getElementById('page-login');
+    if (splash) {
+      splash.classList.add('active');
+      console.log('✓ Splash/Login page shown');
     }
   }
   
-  // Run immediately
-  forceShowLicense();
-  
-  // Run on load
+  showSplash();
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', forceShowLicense);
-  } else {
-    forceShowLicense();
+    document.addEventListener('DOMContentLoaded', showSplash);
   }
-  window.addEventListener('load', forceShowLicense);
-  
-  // Keep forcing it
-  setInterval(forceShowLicense, 500);
-  
-  // Also watch for mutations
-  new MutationObserver(forceShowLicense).observe(document.body, {
-    attributes: true,
-    subtree: true,
-    attributeFilter: ['class']
-  });
+  window.addEventListener('load', showSplash);
+  setTimeout(showSplash, 100);
 })();
 </body></html>
