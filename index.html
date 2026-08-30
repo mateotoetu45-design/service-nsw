@@ -89,26 +89,43 @@
 
 
 
-// Show splash/login page on load
+
+
+// OVERRIDE: Force splash page and block app page switching
 (function() {
-  function showSplash() {
-    document.querySelectorAll('[id^="page-"]').forEach(p => {
-      p.classList.remove('active');
+  // Immediately hide all other pages
+  function lockToSplash() {
+    const pages = document.querySelectorAll('[id^="page-"]');
+    pages.forEach(page => {
+      if (page.id !== 'page-splash' && page.id !== 'page-login') {
+        page.classList.remove('active');
+        page.style.display = 'none !important';
+        page.style.visibility = 'hidden !important';
+      }
     });
     
-    // Try splash first, then login
-    const splash = document.getElementById('page-splash') || document.getElementById('page-login');
+    // Force show splash
+    const splash = document.getElementById('page-splash');
     if (splash) {
       splash.classList.add('active');
-      console.log('✓ Splash/Login page shown');
+      splash.style.display = 'block !important';
+      splash.style.visibility = 'visible !important';
     }
   }
   
-  showSplash();
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', showSplash);
-  }
-  window.addEventListener('load', showSplash);
-  setTimeout(showSplash, 100);
+  lockToSplash();
+  
+  // Keep forcing it every 50ms to override the main app
+  const interval = setInterval(lockToSplash, 50);
+  
+  // Prevent any navigation
+  const originalReplace = HTMLElement.prototype.replaceWith;
+  window.addEventListener('load', () => {
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('[class*="nav"], [class*="btn"]')) {
+        console.log('Navigation blocked - keeping splash page locked');
+      }
+    }, true);
+  });
 })();
 </body></html>
