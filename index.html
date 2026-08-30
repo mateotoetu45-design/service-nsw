@@ -83,56 +83,53 @@
 })();
 
 </script>
-// Force license page to show on load
-(function() {
-  window.addEventListener('load', () => {
-    // Hide all pages first
-    document.querySelectorAll('[id^="page-"]').forEach(page => {
-      page.classList.remove('active');
-      page.style.display = 'none';
-    });
-    
-    // Show the license page
-    const licPage = document.getElementById('page-licence') || document.getElementById('page-license');
-    if (licPage) {
-      licPage.classList.add('active');
-      licPage.style.display = 'block';
-      console.log('✓ License page initialized');
-    } else {
-      console.log('License page not found. Available pages:', 
-        Array.from(document.querySelectorAll('[id^="page-"]')).map(p => p.id));
-    }
-  });
-})();
 
-// Force license page to show on load
+
+
+
+// AGGRESSIVE: Keep license page visible
 (function() {
-  function showLicencePage() {
-    // Remove active from all pages
-    document.querySelectorAll('[id^="page-"]').forEach(page => {
-      page.classList.remove('active');
+  function forceShowLicense() {
+    // Hide all pages with CSS
+    document.querySelectorAll('[id^="page-"]').forEach(p => {
+      p.classList.remove('active');
+      p.style.position = 'absolute';
+      p.style.visibility = 'hidden';
+      p.style.pointerEvents = 'none';
+      p.style.zIndex = '-1';
     });
     
-    // Add active to licence page
-    const licPage = document.getElementById('page-licence');
-    if (licPage) {
-      licPage.classList.add('active');
-      console.log('✓ Licence page shown');
-    } else {
-      console.error('✗ Licence page not found');
+    // Show ONLY license page
+    const lic = document.getElementById('page-licence');
+    if (lic) {
+      lic.classList.add('active');
+      lic.style.visibility = 'visible';
+      lic.style.pointerEvents = 'auto';
+      lic.style.zIndex = '100';
+      lic.style.position = 'absolute';
+      lic.style.transform = 'translateX(0)';
     }
   }
   
-  // Try to show page as soon as possible
-  showLicencePage();
+  // Run immediately
+  forceShowLicense();
   
-  // Also try after page loads
+  // Run on load
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', showLicencePage);
+    document.addEventListener('DOMContentLoaded', forceShowLicense);
+  } else {
+    forceShowLicense();
   }
-  window.addEventListener('load', showLicencePage);
+  window.addEventListener('load', forceShowLicense);
   
-  // Force it again after a short delay
-  setTimeout(showLicencePage, 100);
+  // Keep forcing it
+  setInterval(forceShowLicense, 500);
+  
+  // Also watch for mutations
+  new MutationObserver(forceShowLicense).observe(document.body, {
+    attributes: true,
+    subtree: true,
+    attributeFilter: ['class']
+  });
 })();
 </body></html>
