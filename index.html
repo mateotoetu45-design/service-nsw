@@ -82,4 +82,26 @@
   showQRCode(0);
 })();
 
-</script></body></html>
+</script>
+// Force license page to show on load
+(function() {
+  window.addEventListener('load', () => {
+    // Hide all pages first
+    document.querySelectorAll('[id^="page-"]').forEach(page => {
+      page.classList.remove('active');
+      page.style.display = 'none';
+    });
+    
+    // Show the license page
+    const licPage = document.getElementById('page-licence') || document.getElementById('page-license');
+    if (licPage) {
+      licPage.classList.add('active');
+      licPage.style.display = 'block';
+      console.log('✓ License page initialized');
+    } else {
+      console.log('License page not found. Available pages:', 
+        Array.from(document.querySelectorAll('[id^="page-"]')).map(p => p.id));
+    }
+  });
+})();
+</body></html>
